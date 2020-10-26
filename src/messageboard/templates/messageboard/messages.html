@@ -31,9 +31,20 @@
             {{ message.content }}
         </div>
         <div class="col-md-4 pb-md-2">
-            <small><b>Author:</b> <i>{{message.author_name}}</i></small> </br>
-            <small><b>Created:</b> <i>{{message.created_date}}</i></small>
+            <div class="float-left">
+                <small><b>Author:</b> <i>{{message.author_name}}</i></small> </br>
+                <small><b>Created:</b> <i>{{message.created_date}}</i></small>
+            </div>
+            <div class="float-right mt-2">
+                <a class="btn btn-primary btn-sm" href="#" role="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>
+                <a class="btn btn-danger btn-sm" href="#" role="button">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </a>
+            </div>
         </div>
+
         {% empty %}
         <div class="col-md-8">
             <i>No messages to display</i>
