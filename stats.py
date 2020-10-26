@@ -12,20 +12,19 @@ class MessageBoardAPIWrapper:
     http://localhost:8080/api/
     """
 
-    def __init__(self, base_url: str = "http://localhost:8080"):
-        self.base_url = base_url
-
-        result = requests.get(f"{self.base_url}/api/messages/")
-        messages = []
-        if requests.codes.ok == result.status_code:
-            messages = [message["content"] for message in result.json()]
-        self.messages = messages
+    def __init__(self, base_api_url: str = "http://localhost:8080/api/"):
+        self.base_api_url = base_api_url
+        self.messages = [message["content"] for message in self._api_get("messages/")]
 
         # Make sure the default tokenizers are downloaded for word/sentence analysis
         try:
             download_corpora.nltk.find("tokenizers/punkt")
         except LookupError:
             download_corpora.nltk.download("punkt")
+
+    def _api_get(self, query: str) -> json:
+        result = requests.get(f"{self.base_api_url}{query}")
+        return result.json()
 
     def num_messages(self) -> int:
         """
@@ -52,7 +51,12 @@ class MessageBoardAPIWrapper:
         """
         Returns the average number of messages per thread, per topic.
         """
-        raise NotImplementedError
+        topics = self._api_get("topics/")
+        topics_dict = {}
+        for topic in topics:
+            topics_dict[topic["title"]] = round(topic["message_count"] / topic["thread_count"], 2)
+
+        return topics_dict
 
     def _as_dict(self) -> dict:
         """
