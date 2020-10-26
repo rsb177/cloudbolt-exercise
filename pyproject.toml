@@ -6,9 +6,10 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-django = "2.2"
+django = ">=2.2.0, <3.0.0"
 django-rest-framework = "^0.1.0"
 requests = "^2.23.0"
+textblob = "^0.15.3"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"

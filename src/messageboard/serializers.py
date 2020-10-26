@@ -64,7 +64,6 @@ class TopicSerializer(serializers.ModelSerializer):
             Serializer class.
     """
 
-    # threads = ThreadSerializer(read_only=True, many=True)
     thread_count = serializers.SerializerMethodField()
     message_count = serializers.SerializerMethodField()
 
