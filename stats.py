@@ -1,6 +1,8 @@
 import json
 from typing import Dict
 
+import requests
+
 
 class MessageBoardAPIWrapper:
     """
@@ -9,14 +11,21 @@ class MessageBoardAPIWrapper:
     http://localhost:8080/api/
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, base_url: str = "http://localhost:8080"):
+        self.base_url = base_url
+
+        result = requests.get(f"{self.base_url}/api/messages/")
+        messages = []
+        if requests.codes.ok == result.status_code:
+            messages = [message["content"] for message in result.json()]
+        self.messages = messages
 
     def num_messages(self) -> int:
         """
         Returns the total number of messages.
         """
-        raise NotImplementedError
+
+        return len(self.messages)
 
     def most_common_word(self) -> str:
         """
