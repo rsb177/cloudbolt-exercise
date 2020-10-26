@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Dict, List
 
 import requests
 from textblob import TextBlob, download_corpora
@@ -22,7 +22,7 @@ class MessageBoardAPIWrapper:
         except LookupError:
             download_corpora.nltk.download("punkt")
 
-    def _api_get(self, query: str) -> json:
+    def _api_get(self, query: str) -> List[dict]:
         result = requests.get(f"{self.base_api_url}{query}")
         return result.json()
 
@@ -68,8 +68,10 @@ class MessageBoardAPIWrapper:
         """
         Dumps the entire messageboard to a JSON file.
         """
+
         with open("messageboard.json", "w") as f:
-            f.write(json.dumps(self._as_dict(), indent=4))
+            # f.write(json.dumps(self._as_dict(), indent=4))
+            f.write(json.dumps(self._api_get("topics/?expand=threads.messages"), indent=4))
 
 
 def main():

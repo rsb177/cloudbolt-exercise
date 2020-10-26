@@ -103,6 +103,14 @@ python-versions = ">=3.5"
 django = ">=1.11"
 
 [[package]]
+name = "drf-flex-fields"
+version = "0.8.6"
+description = "Flexible, dynamic fields and nested resources for Django REST Framework serializers."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "factory-boy"
 version = "2.12.0"
 description = "A versatile test fixtures replacement based on thoughtbot's factory_bot for Ruby."
@@ -359,7 +367,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "6e42cf90e345a4f93f3315f96c95f2e18faff1ed65a51ef0c6ef40de634a5111"
+content-hash = "640338bb2f2f599971623286932c01a8f242e6afcd42911f9d9db775d16cde4a"
 
 [metadata.files]
 appdirs = [
@@ -396,6 +404,9 @@ django-rest-framework = [
 djangorestframework = [
     {file = "djangorestframework-3.11.0-py3-none-any.whl", hash = "sha256:05809fc66e1c997fd9a32ea5730d9f4ba28b109b9da71fccfa5ff241201fd0a4"},
     {file = "djangorestframework-3.11.0.tar.gz", hash = "sha256:e782087823c47a26826ee5b6fa0c542968219263fb3976ec3c31edab23a4001f"},
+]
+drf-flex-fields = [
+    {file = "drf-flex-fields-0.8.6.tar.gz", hash = "sha256:13cd1e4371d0ca9580b8e71282b6cabd7a4e4a57e10298321b312c300eabf2b7"},
 ]
 factory-boy = [
     {file = "factory_boy-2.12.0-py2.py3-none-any.whl", hash = "sha256:728df59b372c9588b83153facf26d3d28947fc750e8e3c95cefa9bed0e6394ee"},
