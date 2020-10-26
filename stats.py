@@ -2,6 +2,7 @@ import json
 from typing import Dict
 
 import requests
+from textblob import TextBlob, download_corpora
 
 
 class MessageBoardAPIWrapper:
@@ -20,6 +21,12 @@ class MessageBoardAPIWrapper:
             messages = [message["content"] for message in result.json()]
         self.messages = messages
 
+        # Make sure the default tokenizers are downloaded for word/sentence analysis
+        try:
+            download_corpora.nltk.find("tokenizers/punkt")
+        except LookupError:
+            download_corpora.nltk.download("punkt")
+
     def num_messages(self) -> int:
         """
         Returns the total number of messages.
@@ -31,7 +38,8 @@ class MessageBoardAPIWrapper:
         """
         Returns the most frequently used word in messages.
         """
-        raise NotImplementedError
+        words = TextBlob(" ".join(self.messages))
+        return sorted(words.word_counts)[0]
 
     def avg_num_words_per_sentence(self) -> float:
         """
