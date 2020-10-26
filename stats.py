@@ -39,13 +39,14 @@ class MessageBoardAPIWrapper:
         Returns the most frequently used word in messages.
         """
         words = TextBlob(" ".join(self.messages))
-        return sorted(words.word_counts)[0]
+        return sorted(words.word_counts.items(), key=lambda x: x[1], reverse=True)[0][0]
 
     def avg_num_words_per_sentence(self) -> float:
         """
         Returns the average number of words per sentence.
         """
-        raise NotImplementedError
+        words = TextBlob(" ".join(self.messages))
+        return round(len(words.words) / len(words.sentences), 2)
 
     def avg_num_msg_thread_topic(self) -> Dict[str, float]:
         """
