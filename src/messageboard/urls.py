@@ -9,6 +9,8 @@ from messageboard.views import (
     ListMessagesView,
     ListThreadsView,
     ListTopicsView,
+    MessageUpdate,
+    MessageDelete,
 )
 from messageboard.viewsets import MessageViewSet, ThreadViewSet, TopicViewSet
 
@@ -35,6 +37,16 @@ urlpatterns = [
         r"^topic/(?P<topic_slug>[\w\-]+)/thread/(?P<thread_id>\d+)/new-message/$",
         AddMessageView.as_view(),
         name="new_message",
+    ),
+    path(
+        "topic/<slug:topic_slug>/thread/<int:thread_id>/message/<int:pk>/edit/",
+        MessageUpdate.as_view(),
+        name="update_message",
+    ),
+    path(
+        "topic/<slug:topic_slug>/thread/<int:thread_id>/message/<int:pk>/delete/",
+        MessageDelete.as_view(),
+        name="delete_message",
     ),
     path("api/", include(router.urls)),
 ]

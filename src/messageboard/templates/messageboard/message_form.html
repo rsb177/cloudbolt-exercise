@@ -5,9 +5,11 @@
         <a href="{{ thread.topic.get_url }}">{{ thread.topic.title }}</a>
         &gt;
         <a href="{{ thread.get_url }}">{{ thread.title }}</a>
-        &gt; New Message</h2>
+        &gt; {%if form.instance.id %}Edit Message{%else%}New Message{%endif%}</h2>
     <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-primary">Create</button>
+        <button type="submit" class="save btn btn-primary">
+            {%if form.instance.id %}Update{%else%}Create{%endif%}
+        </button>
     </form>
 {% endblock %}

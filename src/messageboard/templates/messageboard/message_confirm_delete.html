@@ -1,0 +1,16 @@
+{% extends 'messageboard/base.html' %}
+
+{% block content %}
+    <h2>
+        <a href="{{ thread.topic.get_url }}">{{ thread.topic.title }}</a>
+        &gt;
+        <a href="{{ thread.get_url }}">{{ thread.title }}</a>
+        &gt; Delete Message</h2>
+    <form method="POST" class="post-form">{% csrf_token %}
+        <p>{{ message.content }}</>
+        <p> Are you sure you wish to delete this message?</p>
+        <button type="submit" class="save btn btn-danger">
+            Delete
+        </button>
+    </form>
+{% endblock %}

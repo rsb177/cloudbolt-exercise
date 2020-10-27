@@ -1,9 +1,13 @@
-from django.http import HttpResponseRedirect
-from django.views import View
-from django.shortcuts import render, get_object_or_404
+from typing import Any, Dict
 
-from messageboard.forms import AddThreadForm, AddMessageForm
-from messageboard.models import Topic, Thread
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls.base import reverse
+from django.views import View
+from django.views.generic.edit import DeleteView, UpdateView
+
+from messageboard.forms import AddMessageForm, AddThreadForm
+from messageboard.models import Message, Thread, Topic
 
 
 class ListTopicsView(View):
@@ -159,7 +163,7 @@ class AddMessageView(View):
     """
 
     form_class = AddMessageForm
-    template_name = "messageboard/new_message.html"
+    template_name = "messageboard/message_form.html"
 
     def get(self, request, topic_slug, thread_id):
         """
@@ -220,3 +224,40 @@ class AddMessageView(View):
             django.http.response.HttpResponse: Rendered Message.
         """
         return render(request, self.template_name, {"form": form, "thread": thread})
+
+
+class MessageUpdate(UpdateView):
+    model = Message
+    fields = ["content", "author_name"]
+
+    def get_success_url(self) -> str:
+        obj = Message.objects.get(pk=self.kwargs["pk"])
+        return reverse(
+            "messages",
+            kwargs={"topic_slug": obj.topic.slug, "thread_id": obj.thread_id},
+        )
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        message = context["object"]
+        context["thread"] = message.thread
+        print(context)
+        return context
+
+
+class MessageDelete(DeleteView):
+    model = Message
+
+    def get_success_url(self) -> str:
+        obj = Message.objects.get(pk=self.kwargs["pk"])
+        return reverse(
+            "messages",
+            kwargs={"topic_slug": obj.topic.slug, "thread_id": obj.thread_id},
+        )
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        message = context["object"]
+        context["thread"] = message.thread
+        print(context)
+        return context
