@@ -10,7 +10,9 @@
     </div>
     <div class="row">
         <div class="col-md-4">
+            {% if user.is_authenticated %}
             <a class="btn btn-primary" href="{% url 'new_thread' topic.slug %}" role="button">New thread</a>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -17,7 +17,9 @@
             <b>Created:</b> <i>{{thread.created_date}}</i>
         </div>
         <div class="col-md-4">
+            {% if user.is_authenticated %}
             <a class="btn btn-primary" href="{% url 'new_message' thread.topic.slug thread.id %}" role="button">New message</a>
+            {% endif %}
         </div>
     </div>
 </div>
