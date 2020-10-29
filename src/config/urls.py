@@ -11,4 +11,5 @@ urlpatterns = [
     path(
         "logout/", LogoutView.as_view(template_name="accounts/logout.html"), name="logout"
     ),
+    path('api/account/', include('messageboard.accounts.api.urls')),
 ]

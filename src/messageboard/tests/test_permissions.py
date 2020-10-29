@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls.base import reverse
 
 from messageboard.factories import (
@@ -48,7 +48,7 @@ class AuthTestCases(TestCase):
         self.thread = ThreadFactory(topic=self.topic, author=self.author)
         self.message = MessageFactory(thread=self.thread, author=self.author)
 
-        self.client = TestCase.client()
+        self.client = Client()
         self.client.force_login(user=self.not_author)
 
     def test_login_requried_to_post_thread(self):
@@ -65,7 +65,7 @@ class AuthTestCases(TestCase):
     def test_login_requried_to_post_message(self):
         url_params = {"topic_slug": self.topic.slug, "thread_id": self.thread.id}
         response = self.client.get(reverse("messages", kwargs=url_params))
-        self.assertNotContains(response, 'role="button">New message</a>')
+        self.assertContains(response, 'role="button">New message</a>')
 
         response = self.client.get(reverse("new_message", kwargs=url_params))
-        self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.status_code, 200)

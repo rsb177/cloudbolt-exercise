@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from messageboard.models import Topic, Thread, Message
 from messageboard.serializers import (
@@ -8,7 +10,18 @@ from messageboard.serializers import (
 )
 
 
-class TopicViewSet(viewsets.ModelViewSet):
+class BaseAuthViewSet(viewsets.ModelViewSet):
+    authentication_classes = (TokenAuthentication,)
+
+    def get_permissions(self):
+        if self.action in ["list", "retrieve"]:
+            permission_classes = []
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+
+class TopicViewSet(BaseAuthViewSet):
     """
     Django REST Framework Viewset for Topics.
 
@@ -25,7 +38,7 @@ class TopicViewSet(viewsets.ModelViewSet):
     queryset = Topic.objects.all()
 
 
-class ThreadViewSet(viewsets.ModelViewSet):
+class ThreadViewSet(BaseAuthViewSet):
     """
     Django REST Framework Viewset for Threads.
 
@@ -42,7 +55,7 @@ class ThreadViewSet(viewsets.ModelViewSet):
     queryset = Thread.objects.all()
 
 
-class MessageViewSet(viewsets.ModelViewSet):
+class MessageViewSet(BaseAuthViewSet):
     """
     Django REST Framework Viewset for Messages.
 
