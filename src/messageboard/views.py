@@ -1,5 +1,6 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls.base import reverse
@@ -54,7 +55,7 @@ class ListThreadsView(View):
         )
 
 
-class AddThreadView(View):
+class AddThreadView(LoginRequiredMixin, View):
     """
     Add a Thread to a given Topic.
 
@@ -154,7 +155,7 @@ class ListMessagesView(View):
         )
 
 
-class AddMessageView(View):
+class AddMessageView(LoginRequiredMixin, View):
     """
     Add a Message to a given Thread.
 
@@ -226,9 +227,32 @@ class AddMessageView(View):
         return render(request, self.template_name, {"form": form, "thread": thread})
 
 
-class MessageUpdate(UpdateView):
+class MessageUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Message
-    fields = ["content", "author_name"]
+    fields = ["content", "author"]
+
+    def get_success_url(self) -> str:
+        obj = Message.objects.get(pk=self.kwargs["pk"])
+        return reverse(
+            "messages",
+            kwargs={"topic_slug": obj.topic.slug, "thread_id": obj.thread_id},
+        )
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        message = context["object"]
+        context["thread"] = message.thread
+        return context
+
+    def test_func(self) -> Optional[bool]:
+        obj = Message.objects.get(pk=self.kwargs["pk"])
+        # print(f"sup?:{self.request.user.username}, {obj.author}")
+        # print('blah')
+        return self.request.user == obj.author
+
+
+class MessageDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Message
 
     def get_success_url(self) -> str:
         obj = Message.objects.get(pk=self.kwargs["pk"])
@@ -244,20 +268,6 @@ class MessageUpdate(UpdateView):
         print(context)
         return context
 
-
-class MessageDelete(DeleteView):
-    model = Message
-
-    def get_success_url(self) -> str:
+    def test_func(self) -> Optional[bool]:
         obj = Message.objects.get(pk=self.kwargs["pk"])
-        return reverse(
-            "messages",
-            kwargs={"topic_slug": obj.topic.slug, "thread_id": obj.thread_id},
-        )
-
-    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        message = context["object"]
-        context["thread"] = message.thread
-        print(context)
-        return context
+        return self.request.user == obj.author

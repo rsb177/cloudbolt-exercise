@@ -13,7 +13,7 @@
     </div>
     <div class="row">
         <div class="col-md-8">
-            <b>Author:</b> <i>{{thread.author_name}}</i> </br>
+            <b>Author:</b> <i>{{thread.author}}</i> </br>
             <b>Created:</b> <i>{{thread.created_date}}</i>
         </div>
         <div class="col-md-4">
@@ -34,10 +34,11 @@
         </div>
         <div class="col-md-4 pb-md-2">
             <div class="float-left">
-                <small><b>Author:</b> <i>{{message.author_name}}</i></small> </br>
+                <small><b>Author:</b> <i>{{message.author}}</i></small> </br>
                 <small><b>Created:</b> <i>{{message.created_date}}</i></small>
             </div>
             <div class="float-right mt-2">
+                {% if user == message.author %}
                 <a
                     class="btn btn-primary btn-sm"
                     href="{% url 'update_message' thread.topic.slug thread.id message.id %}"
@@ -52,6 +53,7 @@
                 >
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </a>
+                {% endif %}
             </div>
         </div>
 

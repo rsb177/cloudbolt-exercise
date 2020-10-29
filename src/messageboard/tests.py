@@ -3,7 +3,7 @@ import random
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from messageboard.factories import ThreadFactory, TopicFactory
+from messageboard.factories import ThreadFactory, TopicFactory, UserFactory
 from messageboard.models import Thread, Topic
 
 
@@ -47,11 +47,11 @@ class TopicTestCases(TestCase):
         """
         # Generate a topic
         topic = TopicFactory()
+        author = UserFactory()
 
         # Generate 5 threads in that topic
         threads = [
-            topic.create_thread(title=f"{i}{i}{i}", author_name=f"{i}{i}")
-            for i in range(5)
+            topic.create_thread(title=f"{i}{i}{i}", author=author) for i in range(5)
         ]
 
         # There should be five threads
@@ -98,6 +98,7 @@ class ThreadTestCases(TestCase):
         Setup a Topic to add Threads to.
         """
         self.topic = TopicFactory()
+        self.author = UserFactory()
 
     def test_thread_url(self):
         """
@@ -137,8 +138,7 @@ class ThreadTestCases(TestCase):
         thread = ThreadFactory(topic=self.topic)
 
         message = thread.create_message(
-            content=str(random.randrange(100, 1000)),
-            author_name=str(random.randrange(0, 99)),
+            content=str(random.randrange(100, 1000)), author=self.author,
         )
 
         self.assertEqual(len(thread.messages), 1)
@@ -151,8 +151,7 @@ class ThreadTestCases(TestCase):
         thread = ThreadFactory(topic=self.topic)
 
         messages = [
-            thread.create_message(content=f"{i}{i}{i}", author_name=f"{i}{i}")
-            for i in range(5)
+            thread.create_message(content=f"{i}{i}{i}", author=self.author) for i in range(5)
         ]
 
         for message in messages:
@@ -161,22 +160,22 @@ class ThreadTestCases(TestCase):
 
     def test_thread_required_fields(self):
         """
-        Threads require the 'author_name' and 'title' fields.
+        Threads require the 'author' and 'title' fields.
         """
         with self.assertRaisesMessage(
             TypeError,
-            "create_thread() missing 1 required positional argument: 'author_name'",
+            "create_thread() missing 1 required positional argument: 'author'",
         ):
             _ = self.topic.create_thread(title="Foo")
 
         with self.assertRaisesMessage(
             TypeError, "create_thread() missing 1 required positional argument: 'title'"
         ):
-            _ = self.topic.create_thread(author_name="Foo B. Baz")
+            _ = self.topic.create_thread(author=self.author)
 
         with self.assertRaisesMessage(
             TypeError,
-            "create_thread() missing 2 required positional arguments: 'title' and 'author_name'",
+            "create_thread() missing 2 required positional arguments: 'title' and 'author'",
         ):
             _ = self.topic.create_thread()
 
@@ -198,33 +197,34 @@ class MessageTestCases(TestCase):
         """
         self.topic = TopicFactory()
         self.thread = ThreadFactory(topic=self.topic)
+        self.author = UserFactory()
 
     def test_get_messages_thread(self):
         """
         A Message has a relationship to it's Thread.
         """
-        message = self.thread.create_message(content="Foo", author_name="Foo B. Baz")
+        message = self.thread.create_message(content="Foo", author=self.author)
 
         self.assertEqual(message.thread, self.thread)
 
     def test_message_required_fields(self):
         """
-        A Message requires both the 'author_name' and 'content' fields.
+        A Message requires the 'content' fields.
         """
         with self.assertRaisesMessage(
             TypeError,
             "create_message() missing 1 required positional argument: 'content'",
         ):
-            _ = self.thread.create_message(author_name="Foo B. Baz")
+            _ = self.thread.create_message(author=self.author)
 
         with self.assertRaisesMessage(
             TypeError,
-            "create_message() missing 1 required positional argument: 'author_name'",
+            "create_message() missing 1 required positional argument: 'author'",
         ):
             _ = self.thread.create_message(content="Foo")
 
         with self.assertRaisesMessage(
             TypeError,
-            "create_message() missing 2 required positional arguments: 'content' and 'author_name'",
+            "create_message() missing 2 required positional arguments: 'content' and 'author'",
         ):
             _ = self.thread.create_message()

@@ -1,7 +1,24 @@
 from datetime import timezone
 import factory
 
+from django.contrib.auth import get_user_model
+
 from messageboard.models import Topic, Thread, Message
+
+
+User = get_user_model()
+
+
+class UserFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for producing users
+    """
+
+    class Meta:
+        model = User
+
+    username = factory.Sequence(lambda n: "username_{}".format(n))
+    password = factory.PostGenerationMethodCall("set_password", "password")
 
 
 class TopicFactory(factory.Factory):
@@ -45,7 +62,7 @@ class ThreadFactory(factory.Factory):
     # Titles are sentences, approximately 8 words in length
     title = factory.Faker("sentence", nb_words=8, variable_nb_words=True)
     # Author Names are auto-generated usernames
-    author_name = factory.Faker("user_name")
+    author = factory.SubFactory(UserFactory)
     # Created dates are randomly distributed over the last year
     created_date = factory.Faker(
         "date_time_between", start_date="-2y", end_date="-1y", tzinfo=timezone.utc
@@ -89,8 +106,7 @@ class MessageFactory(factory.Factory):
 
     # Paragraph, approximately 3 sentences in length
     content = factory.Faker("paragraph", nb_sentences=3, variable_nb_sentences=True)
-    # Author Names are auto-generated usernames
-    author_name = factory.Faker("user_name")
+    author = factory.SubFactory(UserFactory)
     # Created dates are randomly distributed over the last year
     created_date = factory.Faker(
         "date_time_between", start_date="-1y", end_date="now", tzinfo=timezone.utc

@@ -1,8 +1,12 @@
 from django.utils import timezone
 
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+
+
+User = get_user_model()
 
 
 class Topic(models.Model):
@@ -29,14 +33,14 @@ class Topic(models.Model):
         """
         return reverse("threads", args=[str(self.slug)])
 
-    def create_thread(self, title: str, author_name: str):
+    def create_thread(self, title: str, author: User):
         """
         Helper method creates a Thread within this Topic. Automatically sets
         created_date to current date-time.
 
         Args:
             title (str): Thread title
-            author_name (str): Thread author
+            author (User): Thread author
 
         Returns:
             Thread
@@ -44,7 +48,7 @@ class Topic(models.Model):
         return Thread.objects.create(
             title=title,
             topic=self,
-            author_name=author_name,
+            author=author,
             created_date=timezone.now(),
         )
 
@@ -69,7 +73,7 @@ class Thread(models.Model):
 
     title = models.CharField(max_length=120, blank=False, unique=True)
     topic = models.ForeignKey(Topic, null=True, blank=False, on_delete=models.SET_NULL)
-    author_name = models.CharField(max_length=80, blank=False, null=False)
+    author = models.ForeignKey(User, null=True, blank=False, on_delete=models.CASCADE)
     created_date = models.DateTimeField()
 
     def __str__(self):
@@ -81,14 +85,14 @@ class Thread(models.Model):
         """
         return reverse("messages", args=[str(self.topic.slug), str(self.id)])
 
-    def create_message(self, content: str, author_name: str):
+    def create_message(self, content: str, author: User):
         """
         Helper method creates a Message within this Thread. Automatically sets
         created_date to current date-time.
 
         Args:
             content (str): Message body
-            author_name (str): Message author
+            author (User): Message author
 
         Returns:
             Message
@@ -96,7 +100,7 @@ class Thread(models.Model):
         return Message.objects.create(
             content=content,
             thread=self,
-            author_name=author_name,
+            author=author,
             created_date=timezone.now(),
         )
 
@@ -126,7 +130,7 @@ class Message(models.Model):
     thread = models.ForeignKey(
         Thread, null=True, blank=False, on_delete=models.SET_NULL
     )
-    author_name = models.CharField(max_length=80, blank=False, null=False)
+    author = models.ForeignKey(User, null=True, blank=False, on_delete=models.CASCADE)
     created_date = models.DateTimeField()
 
     def __str__(self):

@@ -26,7 +26,7 @@ class AddThreadForm(forms.ModelForm):
         """
 
         model = Thread
-        fields = ("title", "author_name")
+        fields = ("title", "author")
 
     def __init__(self, *args, **kwargs):
         """
@@ -45,7 +45,7 @@ class AddThreadForm(forms.ModelForm):
         """
         return self.topic.create_thread(
             title=self.cleaned_data["title"],
-            author_name=self.cleaned_data["author_name"],
+            author=self.cleaned_data["author"],
         )
 
 
@@ -70,7 +70,7 @@ class AddMessageForm(forms.ModelForm):
         """
 
         model = Message
-        fields = ("content", "author_name")
+        fields = ("content", "author")
 
     def __init__(self, *args, **kwargs):
         """
@@ -89,5 +89,5 @@ class AddMessageForm(forms.ModelForm):
         """
         return self.thread.create_message(
             content=self.cleaned_data["content"],
-            author_name=self.cleaned_data["author_name"],
+            author=self.cleaned_data["author"],
         )
