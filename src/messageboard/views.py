@@ -94,7 +94,8 @@ class AddThreadView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, topic=topic)
 
         if form.is_valid():
-            form.save()
+            form.save(user=request.user)
+
             return HttpResponseRedirect(topic.get_url())
         else:
             return self.common_context(request, form, topic)
@@ -196,7 +197,7 @@ class AddMessageView(LoginRequiredMixin, View):
         form = self.form_class(request.POST, thread=thread)
 
         if form.is_valid():
-            form.save()
+            form.save(user=request.user)
             return HttpResponseRedirect(thread.get_url())
         else:
             return self.common_context(request, form, thread)

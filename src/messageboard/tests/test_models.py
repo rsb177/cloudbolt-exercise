@@ -3,7 +3,11 @@ import random
 from django.db.utils import IntegrityError
 from django.test import TestCase
 
-from messageboard.factories import ThreadFactory, TopicFactory, UserFactory
+from messageboard.factories import (
+    ThreadFactory,
+    TopicFactory,
+    UserFactory,
+)
 from messageboard.models import Thread, Topic
 
 
@@ -151,7 +155,8 @@ class ThreadTestCases(TestCase):
         thread = ThreadFactory(topic=self.topic)
 
         messages = [
-            thread.create_message(content=f"{i}{i}{i}", author=self.author) for i in range(5)
+            thread.create_message(content=f"{i}{i}{i}", author=self.author)
+            for i in range(5)
         ]
 
         for message in messages:
@@ -228,3 +233,6 @@ class MessageTestCases(TestCase):
             "create_message() missing 2 required positional arguments: 'content' and 'author'",
         ):
             _ = self.thread.create_message()
+
+
+
